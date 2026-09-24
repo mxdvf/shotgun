@@ -21,9 +21,10 @@ fn main() {
       .nr_queues(2)
       .build()
       .unwrap();
-  let tgt_fn = |dev: &mut UblkDev| lo_init_tgt(dev, &loop_tgt);
+  let tgt_fn = |dev: &mut UblkDev| loop_init_tgt(dev, &loop_tgt);
+  let q_handler = move |qid, dev: &_| q_fn(qid, dev);
   let post_start_action = move |ctrl: &UblkCtrl| ctrl.dump();
 
   // The actual main entrypoint into the ublk framework.
-  ctrl.run_target(tgt_fn, move |qid, dev: &_| q_fn(qid, dev), post_start_action).unwrap();
+  ctrl.run_target(tgt_fn, q_handler, post_start_action).unwrap();
 }
